@@ -19,9 +19,7 @@ const nextDay = addDays(targetDate, 1);
 
 async function getData(userName: string, meetingName: string) {
   const data = await prisma.user.findUnique({
-    where: {
-      username: userName,
-    },
+    where: { username: userName },
     select: {
       grantEmail: true,
       name: true,
@@ -30,23 +28,12 @@ async function getData(userName: string, meetingName: string) {
       Availability: true,
       EventType: {
         where: {
-          user: {
-            username: userName,
-          },
+          user: { username: userName },
           url: meetingName,
         },
       },
     },
   });
-
-  /* const nylasCalendarData = await nylas.calendars.getFreeBusy({
-    identifier: data?.grantId as string,
-    requestBody: {
-      startTime: Math.floor(targetDate.getTime() / 1000),
-      endTime: Math.floor(nextDay.getTime() / 1000),
-      emails: [data?.grantEmail as string],
-    },
-  }); */
 
   if (!data) {
     return notFound();
@@ -63,11 +50,18 @@ const MeetingPagee = async ({
   searchParams: { date?: string; time?: string };
 }) => {
   const { data } = await getData(params.username, params.meetingName);
-  const selectedDate = searchParams.date
-    ? new Date(searchParams.date)
-    : new Date();
-
+  const selectedDate = searchParams.date ? new Date(searchParams.date) : new Date();
   const showForm = !!searchParams.date && !!searchParams.time;
+
+  const daysofWeek = [
+    { day: "Monday", isActive: true },
+    { day: "Tuesday", isActive: true },
+    { day: "Wednesday", isActive: true },
+    { day: "Thursday", isActive: true },
+    { day: "Friday", isActive: true },
+    { day: "Saturday", isActive: false },
+    { day: "Sunday", isActive: false },
+  ];
 
   return (
     <div className="min-h-screen w-screen flex items-center justify-center p-4">
@@ -82,9 +76,7 @@ const MeetingPagee = async ({
                 width={30}
                 height={30}
               />
-              <p className="text-sm font-medium text-[#6B7280] mt-1">
-                {data.name}
-              </p>
+              <p className="text-sm font-medium text-[#6B7280] mt-1">{data.name}</p>
               <h1 className="text-xl font-semibold mt-2">Design Workshop</h1>
               <p className="text-sm font-medium text-[#374151]">
                 A longer chat to run through design.
@@ -93,49 +85,31 @@ const MeetingPagee = async ({
               <div className="mt-5 grid gap-y-2">
                 <p className="flex items-center">
                   <CalendarX2 className="size-4 mr-2 text-[#6B7280]" />
-                  <span className="text-sm font-medium text-[#374151]">
-                    Friday, 24th June
-                  </span>
+                  <span className="text-sm font-medium text-[#374151]">Friday, 24th June</span>
                 </p>
                 <p className="flex items-center">
                   <Clock className="size-4 mr-2 text-[#6B7280]" />
-                  <span className="text-sm font-medium text-[#374151]">
-                    30 Mins
-                  </span>
+                  <span className="text-sm font-medium text-[#374151]">30 Mins</span>
                 </p>
                 <p className="flex items-center">
                   <BookMarked className="size-4 mr-2 text-[#6B7280]" />
-                  <span className="text-sm font-medium text-[#374151]">
-                    Google Meet
-                  </span>
+                  <span className="text-sm font-medium text-[#374151]">Google Meet</span>
                 </p>
               </div>
             </div>
-            <Separator
-              orientation="vertical"
-              className="hidden md:block h-full w-[1px]"
-            />
+            <Separator orientation="vertical" className="hidden md:block h-full w-[1px]" />
 
-            <form
-              className="flex flex-col gap-y-4"
-              action={createMeetingAction}
-            >
+            <form className="flex flex-col gap-y-4" action={createMeetingAction}>
               <input type="hidden" name="startTime" value={searchParams.date} />
-              <input
-                type="hidden"
-                name="eventName"
-                value={params.meetingName}
-              />
+              <input type="hidden" name="eventName" value={params.meetingName} />
               <div className="flex flex-col gap-y-1">
                 <Label>Your Name</Label>
                 <Input name="name" placeholder="Your Name" />
               </div>
-
               <div className="flex flex-col gap-y-1">
                 <Label>Your Email</Label>
                 <Input name="email" placeholder="johndoe@gmail.com" />
               </div>
-
               <SubmitButton text="Book Meeting" />
             </form>
           </CardContent>
@@ -151,12 +125,8 @@ const MeetingPagee = async ({
                 width={30}
                 height={30}
               />
-              <p className="text-sm font-medium text-[#6B7280] mt-1">
-                {data.name}
-              </p>
-              <h1 className="text-xl font-semibold mt-2">
-                {data.EventType[0].title}
-              </h1>
+              <p className="text-sm font-medium text-[#6B7280] mt-1">{data.name}</p>
+              <h1 className="text-xl font-semibold mt-2">{data.EventType[0].title}</h1>
               <p className="text-sm font-medium text-[#374151]">
                 {data.EventType[0].description}
               </p>
@@ -164,9 +134,7 @@ const MeetingPagee = async ({
               <div className="mt-5 grid gap-y-2">
                 <p className="flex items-center">
                   <CalendarX2 className="size-4 mr-2 text-[#6B7280]" />
-                  <span className="text-sm font-medium text-[#374151]">
-                    Friday, 24th June
-                  </span>
+                  <span className="text-sm font-medium text-[#374151]">Friday, 24th June</span>
                 </p>
                 <p className="flex items-center">
                   <Clock className="size-4 mr-2 text-[#6B7280]" />
@@ -176,27 +144,17 @@ const MeetingPagee = async ({
                 </p>
                 <p className="flex items-center">
                   <BookMarked className="size-4 mr-2 text-[#6B7280]" />
-                  <span className="text-sm font-medium text-[#374151]">
-                    Google Meet
-                  </span>
+                  <span className="text-sm font-medium text-[#374151]">Google Meet</span>
                 </p>
               </div>
             </div>
 
-            <Separator
-              orientation="vertical"
-              className="hidden md:block h-full w-[1px]"
-            />
-
+            <Separator orientation="vertical" className="hidden md:block h-full w-[1px]" />
             <div className="my-4 md:my-0">
-              <RenderCalendar />
+              <RenderCalendar daysofWeek={daysofWeek} />
             </div>
-
-            <Separator
-              orientation="vertical"
-              className="hidden md:block h-full w-[1px]"
-            />
-
+            <Separator orientation="vertical" className="hidden md:block h-full w-[1px]" />
+            {/*  @ts-ignore */}
             <TimeSlots selectedDate={selectedDate} userName={params.username} />
           </CardContent>
         </Card>

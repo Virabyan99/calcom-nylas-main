@@ -82,6 +82,7 @@ function calculateAvailableTimeSlots(
   );
 
   // Extract busy slots from Nylas data
+  // @ts-ignore
   const busySlots = nylasData.data[0].timeSlots.map((slot: any) => ({
     start: fromUnixTime(slot.startTime),
     end: fromUnixTime(slot.endTime),
@@ -116,11 +117,12 @@ function calculateAvailableTimeSlots(
 export async function TimeSlots({
   selectedDate,
   userName,
-  meetingDuration,
+  meetingDuration
 }: iappProps) {
   const { data, nylasCalendarData } = await getAvailability(
     selectedDate,
-    userName
+    userName,
+    
   );
 
   const dbAvailability = { fromTime: data?.fromTime, tillTime: data?.tillTime };

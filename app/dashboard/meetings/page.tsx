@@ -1,8 +1,8 @@
-import { cancelMeetingAction } from "@/app/actions";
-import { EmptyState } from "@/app/components/dashboard/EmptyState";
-import { SubmitButton } from "@/app/components/SubmitButton";
-import { auth } from "@/app/lib/auth";
-import { nylas } from "@/app/lib/nylas";
+import { cancelMeetingAction } from '@/app/actions'
+import { EmptyState } from '@/app/components/dashboard/EmptyState'
+import { SubmitButton } from '@/app/components/SubmitButton'
+import { auth } from '@/app/lib/auth'
+import { nylas } from '@/app/lib/nylas'
 
 import {
   Card,
@@ -10,13 +10,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import prisma from "@/lib/prisma";
-import { format, fromUnixTime } from "date-fns";
-import { Icon, Video } from "lucide-react";
+} from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import prisma from '@/lib/prisma'
+import { format, fromUnixTime } from 'date-fns'
+import { Icon, Video } from 'lucide-react'
 
-import React from "react";
+import React from 'react'
 
 async function getData(userId: string) {
   const userData = await prisma.user.findUnique({
@@ -27,24 +27,24 @@ async function getData(userId: string) {
       grantId: true,
       grantEmail: true,
     },
-  });
+  })
 
   if (!userData) {
-    throw new Error("User not found");
+    throw new Error('User not found')
   }
   const data = await nylas.events.list({
     identifier: userData?.grantId as string,
     queryParams: {
       calendarId: userData?.grantEmail as string,
     },
-  });
+  })
 
-  return data;
+  return data
 }
 
 const MeetingsPage = async () => {
-  const session = await auth();
-  const data = await getData(session?.user?.id as string);
+  const session = await auth()
+  const data = await getData(session?.user?.id as string)
 
   return (
     <>
@@ -70,19 +70,23 @@ const MeetingsPage = async () => {
                 <div className="grid grid-cols-3 justify-between items-center">
                   <div>
                     <p className="text-muted-foreground text-sm">
-                      {format(fromUnixTime(item.when.startTime), "EEE, dd MMM")}
+                      {/* @ts-ignore */}
+                      {format(fromUnixTime(item.when.startTime), 'EEE, dd MMM')}
                     </p>
                     <p className="text-muted-foreground text-xs pt-1">
-                      {format(fromUnixTime(item.when.startTime), "hh:mm a")} -{" "}
-                      {format(fromUnixTime(item.when.endTime), "hh:mm a")}
+                      {/* @ts-ignore */}
+                      {format(fromUnixTime(item.when.startTime),
+                        'hh:mm a'
+                      )} - {/* @ts-ignore */}
+                      {format(fromUnixTime(item.when.endTime), 'hh:mm a')}
                     </p>
                     <div className="flex items-center mt-1">
-                      <Video className="size-4 mr-2 text-primary" />{" "}
+                      <Video className="size-4 mr-2 text-primary" />{' '}
                       <a
                         className="text-xs text-primary underline underline-offset-4"
                         target="_blank"
-                        href={item.conferencing.details.url}
-                      >
+                        // @ts-ignore
+                        href={item.conferencing.details.url}>
                         Join Meeting
                       </a>
                     </div>
@@ -106,10 +110,10 @@ const MeetingsPage = async () => {
         </Card>
       )}
     </>
-  );
-};
+  )
+}
 
-export default MeetingsPage;
+export default MeetingsPage
 
 {
   /* <form key={item.id} action={cancelMeetingAction}>
